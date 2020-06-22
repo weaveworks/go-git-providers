@@ -2,13 +2,14 @@ package github
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/google/go-github/v31/github"
+	giturls "github.com/whilp/git-urls"
 	"golang.org/x/oauth2"
 
 	"github.com/weaveworks/go-git-providers/pkg/key"
@@ -137,25 +138,31 @@ func (p *GitHubProvider) getGitHubAPIClient(ctx context.Context) *github.Client 
 	return gh
 }
 
-func repoOwner(repoURL string) (string, error) {
-	return findRepoGroup(repoURL, 1)
-}
-
 func repoName(repoURL string) (string, error) {
-	return findRepoGroup(repoURL, 2)
+		u, err := giturls.Parse(repoURL)
+		if err != nil {
+			return "", fmt.Errorf("unable to parse git URL '%s': %s", repoURL, err.Error())
+		}
+		parts := strings.Split(u.Path, "/")
+		if len(parts) == 0 {
+			return "", fmt.Errorf("could not find name of repository %s", repoURL)
+		}
+
+		lastPathSegment := parts[len(parts)-1]
+		return strings.TrimRight(lastPathSegment, ".git"), nil
 }
 
-func findRepoGroup(repoURL string, groupNum int) (string, error) {
-	if repoURL == "" {
-		return "", errors.New("unable to parse empty repo URL")
-	}
-
-	for _, p := range patterns {
-		m := p.FindStringSubmatch(repoURL)
-		if len(m) == 3 {
-			return m[groupNum], nil
+func repoOwner(repoURL string) (string, error) {
+		u, err := giturls.Parse(repoURL)
+		if err != nil {
+			return "", fmt.Errorf("unable to parse git URL '%s': %s", repoURL, err.Error())
 		}
-	}
+		parts := strings.Split(u.Path, "/")
+		if len(parts) == 0 {
+			return "", fmt.Errorf("could not find name of repository %s", repoURL)
+		}
 
-	return "", fmt.Errorf("unable to parse repo URL %q", repoURL)
+		lastPathSegment := parts[0]
+		return strings.TrimRight(lastPathSegment, ".git"), nil
+
 }
