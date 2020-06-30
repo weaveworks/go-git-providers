@@ -81,7 +81,7 @@ func createSSHKey(title string, readOnly bool) key.SSHKey {
 	Expect(err).ToNot(HaveOccurred())
 
 	return key.SSHKey{
-		Title:    fmt.Sprintf("%s-%s", title, time.Now()),
+		Title:    fmt.Sprintf("%s-%s", title, time.Now().Format("2006-01-02T15:04:05")),
 		Key:      strings.TrimSpace(publicKey),
 		ReadOnly: readOnly,
 	}
