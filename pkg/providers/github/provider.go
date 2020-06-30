@@ -162,7 +162,7 @@ func repoOwner(repoURL string) (string, error) {
 			return "", fmt.Errorf("could not find name of repository %s", repoURL)
 		}
 
-		lastPathSegment := parts[0]
-		return strings.TrimRight(lastPathSegment, ".git"), nil
+		firstPathSegment := parts[0]
+		return firstPathSegment, nil
 
 }
