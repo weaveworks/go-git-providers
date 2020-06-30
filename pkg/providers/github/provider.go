@@ -68,7 +68,7 @@ func (p *GitHubProvider) ListKeys(ctx context.Context) ([]key.SSHKey, error) {
 		return nil, fmt.Errorf("unable to list deploy keys from %s/%s. Got response %s", p.owner, p.repo, resp.Status)
 	}
 
-	allKeys := make([]key.SSHKey, len(keys))
+	allKeys := make([]key.SSHKey, 0, len(keys))
 	for _, k := range keys {
 		allKeys = append(allKeys, key.SSHKey{
 			Title:    *k.Title,
