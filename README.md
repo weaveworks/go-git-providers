@@ -1,5 +1,9 @@
 # go-git-providers
 
+## Deprecated
+
+> :warning: The successor to this library is https://github.com/fluxcd/go-git-providers
+
 `go-git-providers` is a library that contains Go clients for different Git providers like Github.
 
 At the moment only Github operations regarding deploy keys are supported.
